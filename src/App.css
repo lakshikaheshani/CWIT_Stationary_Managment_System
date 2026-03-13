@@ -1,0 +1,608 @@
+/* ===== ROOT ===== */
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== BACKGROUND ===== */
+.login-container, .welcome-container {
+  width: 100%;
+  height: 100vh;
+  background-image: url("./assets/BG.png");
+  background-size: center;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* ===== BIG FRONT LOGO ===== */
+.front-logo {
+  max-width: 280px;   /* control size */
+  width: 100%;
+  height: auto;
+  margin-bottom: 30px;
+  display: block;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== LOGIN / REGISTER CARD ===== */
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px 40px;
+  width: 600px;
+  border-radius: 18px;
+  text-align: center;
+  border: 2px solid #3b6cb7;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== CARD TITLE ===== */
+.login-card h2 {
+  color: #2F6CAF;
+  margin-bottom: 20px;
+}
+
+/* ===== INPUTS ===== */
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid #3060AB;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+}
+
+.login-card input::placeholder {
+  color: #cccccc;
+}
+
+.login-card input:focus {
+  border-color: #2F6CAF;
+  outline: none;
+}
+
+/* ===== DROPDOWN ===== */
+.login-card select {
+  width: 105%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid #3060AB;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #000;
+  cursor: pointer;
+}
+
+.login-card select:focus {
+  border-color: #2F6CAF;
+  outline: none;
+}
+
+/* ===== BUTTON ===== */
+.login-card button, .get-started-btn {
+  padding: 12px 50px;
+  margin: 20px auto 0;
+  background-color: #2f6db5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+}
+
+.login-card button:hover, .get-started-btn:hover {
+  background-color: #255a96;
+}
+
+/* ===== TEXT ===== */
+.error-text {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.signup-text {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #000000;
+}
+
+.signup-text span {
+  color: #2F6CAF;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+/* ==============AdminDashboard ================= */
+/* ===== GLOBAL ===== 
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f4f6f9;
+  color: #1f2937;
+}
+
+/* ===== LAYOUT ===== 
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+/* ===== SIDEBAR ===== 
+.sidebar {
+  width: 250px;
+  background-color: #111827;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 25px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+.menu {
+  flex: 1;
+}
+
+.menu-item {
+  padding: 12px 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+  color: #d1d5db;
+}
+
+.menu-item:hover {
+  background-color: #1f2937;
+  color: #ffffff;
+}
+
+.menu-item.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.logout-btn {
+  padding: 10px;
+  background-color: #ef4444;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+}
+
+/* ===== MAIN ===== 
+.main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.header h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+/* ===== CARD ===== 
+.card {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #111827;
+}
+
+/* ===== FORM ===== 
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* ===== BUTTON ===== 
+.primary-btn {
+  padding: 10px 18px;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.primary-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* ===== TABLE ===== 
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background-color: #f3f4f6;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table th {
+  color: #374151;
+  font-weight: 600;
+}
+
+.table tbody tr {
+  border-top: 1px solid #e5e7eb;
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* HOD INTERFACE  */
+/* Background */
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(to right, #eef2ff, #f8fafc);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  font-size: 16px;
+  color: #334155;
+}
+
+.nav-links li {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-links li:hover {
+  color: #4f46e5;
+}
+
+.logout {
+  color: red;
+  font-weight: bold;
+}
+
+/* Welcome Section */
+.welcome-section {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.welcome-section h1 {
+  font-size: 32px;
+  color: #1e293b;
+}
+
+.welcome-section p {
+  font-size: 18px;
+  color: #475569;
+  margin-top: 10px;
+}
+
+/* Cards */
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 50px;
+}
+
+.card {
+  background: white;
+  width: 300px;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  margin: 5px 0;
+  color: #1e293b;
+}
+
+.open-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(to right, #4f46e5, #9333ea);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.open-btn:hover {
+  opacity: 0.9;
+}
+
+
+
+
+
+
+
+/*========================================================*/
+/* ============================= */
+/* ===== HOD DASHBOARD ===== */
+/* ============================= */
+
+.hod-container {
+  min-height: 100vh;
+  background-image: url("./assets/ABG.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+
+/* ================= Navbar ================= */
+
+.hod-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.front-logo {
+  height: 50px;
+}
+
+.panel-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+}
+
+.logout-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: white;
+  color: #4f46e5;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e5e7eb;
+  transform: scale(1.05);
+}
+
+/* ================= Welcome ================= */
+
+.welcome-section {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.welcome-section h1 {
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.welcome-section p {
+  margin-top: 10px;
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+/* ================= Cards ================= */
+
+.card-container {
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+  padding-bottom: 80px;
+}
+
+.card {
+  width: 320px;
+  padding: 40px 30px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Icon Wrapper */
+.icon-wrapper {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px auto;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.card-icon {
+  font-size: 40px;
+  color: white;
+}
+
+/* Card Text */
+.card h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+/* Button */
+.card-btn {
+  padding: 10px 25px;
+  border-radius: 8px;
+  border: none;
+  background-color: white;
+  color: #4f46e5;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.card-btn:hover {
+  background-color: #e5e7eb;
+  transform: scale(1.05);
+}
