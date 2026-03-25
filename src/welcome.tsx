@@ -67,8 +67,7 @@ const Welcome = () => {
           WELCOME!
         </h1>
         <p style={{ fontSize: "20px", fontStyle: "italic", lineHeight: 1.6, marginBottom: "35px" }}>
-          Manage your stationery requests <br />
-          and stock with ease.
+          Manage your  requests and stock with ease.
         </p>
         <button
           onClick={() => navigate("/login")}

@@ -4,10 +4,7 @@ import BG from "./assets/WBG.png";
 type StationeryReport = {
   date: string;
   item_name: string;
-  opening_stock: number;
-  received_qty: number;
-  issued_qty: number;
-  balance_stock: number;
+  issued_qty: any;
   user: string;
 };
 
@@ -23,46 +20,101 @@ export default function AdminReport() {
   const [stationeryReports, setStationeryReports] = useState<StationeryReport[]>([]);
   const [facilityReports, setFacilityReports] = useState<FacilityReport[]>([]);
   const [activeReport, setActiveReport] = useState("stationery");
-  const [selectedMonth, setSelectedMonth] = useState(""); // new state
+  const [selectedMonth, setSelectedMonth] = useState("");
 
+  // ================= LOAD DATA ON INIT =================
   useEffect(() => {
-    setStationeryReports([
-      { date: "2026-03-01", item_name: "Pens", opening_stock: 100, received_qty: 50, issued_qty: 30, balance_stock: 120, user: "Admin" },
-      { date: "2026-03-05", item_name: "A4 Papers", opening_stock: 200, received_qty: 100, issued_qty: 80, balance_stock: 220, user: "Manager" },
-      { date: "2026-04-02", item_name: "Markers", opening_stock: 50, received_qty: 30, issued_qty: 10, balance_stock: 70, user: "Admin" },
-    ]);
-
-    setFacilityReports([
-      { request_date: "2026-03-03", user_name: "Kasun", request_item: "Meeting Room", payment_type: "NFA", admin_note: "Approved" },
-      { request_date: "2026-03-07", user_name: "Nadeesha", request_item: "Projector", payment_type: "Petty Cash", admin_note: "Pending" },
-      { request_date: "2026-04-10", user_name: "Amal", request_item: "Conference Hall", payment_type: "NFA", admin_note: "Approved" },
-    ]);
+    fetchAllIssues();       // Load Stationery
+    fetchFacilityReports(); // Load Facility
   }, []);
 
-  // CSV Download function
+  // ================= FETCH STATIONERY ALL =================
+  const fetchAllIssues = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/reports/issues");
+      const data = await res.json();
+
+      const formatted = data.map((item: any) => ({
+        date: item.created_at ? item.created_at.split("T")[0] : "-", // YYYY-MM-DD only
+        item_name: item.item_name || "-",
+        issued_qty: item.quantity || "-",
+        user: item.user_email || "-",
+      }));
+
+      setStationeryReports(formatted);
+    } catch (err) {
+      console.error("Fetch Stationery Error:", err);
+    }
+  };
+
+  // ================= FETCH STATIONERY MONTHLY =================
+  const fetchMonthlyReport = async (year: string, month: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/reports/monthly?year=${year}&months=${parseInt(month)}`
+      );
+      const data = await res.json();
+
+      const formatted = data.map((item: any) => ({
+        date: item.Date ? item.Date.split("T")[0] : "-", // YYYY-MM-DD only
+        item_name: item.item_name || "-",
+        issued_qty: item.total_quantity || "-",
+        user: item.user_email || "-",
+      }));
+
+      setStationeryReports(formatted);
+    } catch (err) {
+      console.error("Monthly Stationery Fetch Error:", err);
+    }
+  };
+
+  // ================= FETCH FACILITY REPORT =================
+  const fetchFacilityReports = async (year?: string, month?: string) => {
+    try {
+      let url = "http://localhost:3000/facility-reports";
+
+      if (year && month) {
+        url = `${url}/monthly?year=${year}&month=${parseInt(month)}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const formatted: FacilityReport[] = data.map((item: any) => ({
+        request_date: item.Date ? item.Date.split("T")[0] : "-", // YYYY-MM-DD only
+        user_name: item.Name || "-",
+        request_item: item["Request Item"] || "-",
+        payment_type:
+          item["Payment Type"] === true || item["Payment Type"] === "true"
+            ? "Peticash"
+            : "NFA",
+        admin_note: item["Admin Note"] || "-",
+      }));
+
+      setFacilityReports(formatted);
+    } catch (err) {
+      console.error("Facility Fetch Error:", err);
+    }
+  };
+
+  // ================= CSV DOWNLOAD =================
   const downloadCSV = (data: any[], filename: string) => {
     if (data.length === 0) return;
 
     const headers = Object.keys(data[0]).join(",");
-    const rows = data.map(item => Object.values(item).map(val => `"${val}"`).join(","));
+    const rows = data.map((item) =>
+      Object.values(item).map((val) => `"${val}"`).join(",")
+    );
+
     const csvContent = [headers, ...rows].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
+
+    link.href = URL.createObjectURL(blob);
     link.setAttribute("download", filename);
     link.click();
   };
-
-  // Filter data by selected month
-  const filteredStationery = stationeryReports.filter(item =>
-    selectedMonth === "" || item.date.startsWith(selectedMonth)
-  );
-
-  const filteredFacility = facilityReports.filter(item =>
-    selectedMonth === "" || item.request_date.startsWith(selectedMonth)
-  );
 
   return (
     <>
@@ -73,57 +125,36 @@ export default function AdminReport() {
           font-family: 'Poppins', sans-serif;
           background: url(${BG}) center/cover no-repeat;
           min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          align-items: center;
-          padding: 20px;
           background-attachment: fixed;
           color: #333;
         }
-
         .report-container {
           width: 100%;
           max-width: 1200px;
+          margin: auto;
         }
-
         table {
           width: 100%;
           border-collapse: collapse;
           margin-top: 20px;
-          background: rgba(255,255,255,0.85);
+          background: rgba(255,255,255,0.9);
           border-radius: 10px;
           overflow: hidden;
           table-layout: fixed;
           box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
-
         th, td {
           padding: 12px 15px;
           text-align: left;
           word-wrap: break-word;
         }
-
         th {
           background: #4a90e2;
           color: white;
         }
-
-        tr:nth-child(even) {
-          background: #f2f2f2;
-        }
-
-        tr:hover {
-          background: #dfefff;
-        }
-
-        .report-switch {
-          display: flex;
-          gap: 15px;
-          margin-bottom: 20px;
-          justify-content: center;
-        }
-
+        tr:nth-child(even) { background: #f2f2f2; }
+        tr:hover { background: #dfefff; }
+        .report-switch { display: flex; gap: 15px; margin-top: 80px; margin-bottom: 20px; justify-content: center; }
         button {
           padding: 10px 18px;
           border: none;
@@ -132,44 +163,46 @@ export default function AdminReport() {
           color: white;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: 0.3s;
         }
-
-        button:hover {
-          background: #357ab8;
+        button:hover { background: #357ab8; }
+        .active { background: #2c5fb8; }
+        .download-btn { margin-top: 10px; background: #28a745; }
+        .download-btn:hover { background: #1e7e34; }
+        input[type=month] { padding: 6px 12px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        .top-nav {
+          position: absolute;
+          top: 20px;
+          right: 40px;
+          display: flex;
+          gap: 10px;
         }
-
-        .active {
-          background: #2c5fb8;
-        }
-
-        .download-btn {
-          margin-top: 10px;
-          background: #28a745;
-        }
-
-        .download-btn:hover {
-          background: #1e7e34;
-        }
-
-        select {
+        .top-nav button {
           padding: 6px 12px;
-          margin-bottom: 10px;
-          border-radius: 6px;
-          border: 1px solid #ccc;
+          font-size: 13px;
+          border-radius: 10px;
+          background-color: rgba(74,144,226,0.8);
+          color: white;
         }
 
-        @media (max-width: 768px) {
-          th, td {
-            padding: 8px 10px;
-          }
-          button {
-            padding: 8px 12px;
-          }
+        .white-label {
+        color: white;
         }
+
+
+
+        .top-nav button:hover { background-color: #357ab8; transform: translateY(-2px); }
+        @media (max-width:768px){ th, td { padding: 8px; } }
       `}</style>
 
-      {/* Switch Buttons */}
+      {/* TOP NAV */}
+      <div className="top-nav">
+        <button onClick={() => window.history.back()}>Back</button>
+        <button onClick={() => (window.location.href = "/admin-dashboard")}>Home</button>
+        <button onClick={() => (window.location.href = "/login")}>Logout</button>
+      </div>
+
+      {/* SWITCH BUTTONS */}
       <div className="report-switch">
         <button
           className={activeReport === "stationery" ? "active" : ""}
@@ -185,19 +218,47 @@ export default function AdminReport() {
         </button>
       </div>
 
-      {/* Month selector */}
-      <div>
-        <label>Select Month: </label>
-        <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
-          <option value="">All Months</option>
-          <option value="2026-03">March 2026</option>
-          <option value="2026-04">April 2026</option>
-          <option value="2026-05">May 2026</option>
-        </select>
+
+
+
+
+
+
+      {/* MONTH-YEAR PICKER */}
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+
+        <label style={{ color: "white" }}>
+  Select Month & Year:
+</label>
+
+
+
+
+
+
+
+
+        <input
+          type="month"
+          value={selectedMonth}
+          onChange={(e) => {
+            const value = e.target.value;
+            setSelectedMonth(value);
+
+            if (value) {
+              const [year, month] = value.split("-");
+              fetchMonthlyReport(year, month);    // Stationery
+              fetchFacilityReports(year, month);  // Facility
+            } else {
+              fetchAllIssues();
+              fetchFacilityReports();
+            }
+          }}
+        />
       </div>
 
       <div className="report-container">
-        {/* Stationery Table */}
+        {/* STATIONERY TABLE */}
         {activeReport === "stationery" && (
           <>
             <table>
@@ -205,35 +266,44 @@ export default function AdminReport() {
                 <tr>
                   <th>Date</th>
                   <th>Item Name</th>
-                  <th>Opening Stock</th>
-                  <th>Received Qty</th>
                   <th>Issued Qty</th>
-                  <th>Balance Stock</th>
                   <th>User</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredStationery.map((item, i) => (
-                  <tr key={i}>
-                    <td>{item.date}</td>
-                    <td>{item.item_name}</td>
-                    <td>{item.opening_stock}</td>
-                    <td>{item.received_qty}</td>
-                    <td>{item.issued_qty}</td>
-                    <td>{item.balance_stock}</td>
-                    <td>{item.user}</td>
+                {stationeryReports.length > 0 ? (
+                  stationeryReports.map((item, i) => (
+                    <tr key={i}>
+                      <td>{item.date}</td>
+                      <td>{item.item_name}</td>
+                      <td>{item.issued_qty}</td>
+                      <td>{item.user}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: "center" }}>
+                      No Data Found
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-            <button className="download-btn"
-              onClick={() => downloadCSV(filteredStationery, `stationery_report_${selectedMonth || "all"}.csv`)}>
+            <button
+              className="download-btn"
+              onClick={() =>
+                downloadCSV(
+                  stationeryReports,
+                  `stationery_report_${selectedMonth || "all"}.csv`
+                )
+              }
+            >
               Download CSV
             </button>
           </>
         )}
 
-        {/* Facility Table */}
+        {/* FACILITY TABLE */}
         {activeReport === "facility" && (
           <>
             <table>
@@ -247,27 +317,39 @@ export default function AdminReport() {
                 </tr>
               </thead>
               <tbody>
-                {filteredFacility.map((item, i) => (
-                  <tr key={i}>
-                    <td>{item.request_date}</td>
-                    <td>{item.user_name}</td>
-                    <td>{item.request_item}</td>
-                    <td>{item.payment_type}</td>
-                    <td>{item.admin_note}</td>
+                {facilityReports.length > 0 ? (
+                  facilityReports.map((item, i) => (
+                    <tr key={i}>
+                      <td>{item.request_date}</td>
+                      <td>{item.user_name}</td>
+                      <td>{item.request_item}</td>
+                      <td>{item.payment_type}</td>
+                      <td>{item.admin_note}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: "center" }}>
+                      No Data Found
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-            <button className="download-btn"
-              onClick={() => downloadCSV(filteredFacility, `facility_report_${selectedMonth || "all"}.csv`)}>
+            <button
+              className="download-btn"
+              onClick={() =>
+                downloadCSV(
+                  facilityReports,
+                  `facility_report_${selectedMonth || "all"}.csv`
+                )
+              }
+            >
               Download CSV
             </button>
           </>
         )}
-
-        
       </div>
     </>
   );
-  
 }

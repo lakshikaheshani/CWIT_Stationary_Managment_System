@@ -26,7 +26,7 @@ type StockItem = {
   item_name: string;
   category: string;
   quantity: number;
-  unit_price: number;
+  // unit_price: number;
   last_updated: string;
 };
 
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
     item_name: "",
     category: "",
     quantity: 0,
-    unit_price: 0,
+    // unit_price: 0,
   });
   const [refillQuantities, setRefillQuantities] = useState<Record<number, number>>({});
 
@@ -98,6 +98,9 @@ export default function AdminDashboard() {
 
   // ---------------- FACILITY REQUESTS ----------------
   const [facilityRequests, setFacilityRequests] = useState<FacilityRequest[]>([]);
+
+
+  
 
   // ---------------- CHECK LOW STOCK ----------------
   const checkLowStock = (items: StockItem[]) => {
@@ -357,6 +360,7 @@ export default function AdminDashboard() {
     }
   };
 
+  
   // ---------------- REQUEST ACTIONS ----------------
   const handleApprove = async (id: number) => {
     try {
@@ -386,8 +390,8 @@ export default function AdminDashboard() {
 
   // ---------------- STOCK ACTIONS ----------------
   const handleAddStock = async () => {
-    const { item_name, category, quantity, unit_price } = newStock;
-    if (!item_name || !category || !quantity || !unit_price) return alert("Fill all fields to add stock");
+    const { item_name, category, quantity} = newStock;
+    if (!item_name || !category || !quantity) return alert("Fill all fields to add stock");
     try {
       const res = await fetch("http://localhost:3000/stock", {
         method: "POST",
@@ -397,7 +401,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (!res.ok) return alert(data.error || "Error adding stock");
       alert(data.message || "Stock added successfully");
-      setNewStock({ item_name: "", category: "", quantity: 0, unit_price: 0 });
+      setNewStock({ item_name: "", category: "", quantity: 0 });
       fetchStock();
     } catch (err) {
       console.error(err);
@@ -425,6 +429,11 @@ export default function AdminDashboard() {
     }
   };
 
+
+ 
+
+
+
   // ---------------- NAVIGATION ----------------
   const handleBack = () => window.history.back();
   const handleHome = () => (window.location.href = "/");
@@ -432,7 +441,7 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <style>{`
+     <style>{`
 
 /* ================================
    1. GLOBAL BODY & HTML STYLE
@@ -445,7 +454,6 @@ body, html {
   color: #1a1a1a; 
 }
 
-
 /* ================================
    2. MAIN WRAPPER BACKGROUND
 ================================ */
@@ -453,27 +461,29 @@ body, html {
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  min-height: 100vh; 
+  min-height: 10vh; 
   background: url(${BG}) center/cover no-repeat; 
-  padding: 40px; 
+  padding: 80px; 
+  gap: 15px;
 }
-
 
 /* ================================
    3. NAVBAR DESIGN
 ================================ */
 .navbar { 
   width: 100%; 
-  max-width: 1200px; 
+  max-width: 2000px; 
   display: flex; 
-  justify-content: space-between; 
+  flex-direction: column;        /* keep 3-row layout */
   align-items: center; 
-  padding: 20px 30px; 
+  justify-content: space-between; 
+  padding: 10px 30px; 
   background: rgba(255, 255, 255, 0.25); 
   backdrop-filter: blur(12px); 
   border-radius: 20px; 
   box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
   margin-bottom: 30px; 
+  gap: 15px;
   position: relative;
 }
 
@@ -481,20 +491,24 @@ body, html {
   font-size: 28px; 
   font-weight: 600; 
   color: #222; 
+  align-self: flex-start;  /* force left */
+  margin: 0;
 }
 
-
 /* ================================
-   4. NAVBAR BUTTONS
+   4. NAVIGATION BUTTONS
 ================================ */
 .nav-buttons { 
   display: flex;
-  align-items: center;
+  justify-content: flex-end; /* move to right */
+  align-items: flex-start;   /* align to top */
   gap: 15px;
+  margin-top: 10;             /* optional: remove extra top margin */
+  width: 100%;               /* take full width of navbar */
 }
 
 .nav-buttons button { 
-  padding: 10px 18px; 
+  padding: 8px 18px; 
   border: none; 
   border-radius: 12px; 
   background-color: rgba(255,255,255,0.4); 
@@ -512,84 +526,87 @@ body, html {
 }
 
 /* ================================
-   4.1 NOTIFICATION ICON
+   5. NOTIFICATION ROW & ICONS
 ================================ */
-.notification-icon {
-  position: relative;
-  cursor: pointer;
-  padding: 10px;
-  background: rgba(255,255,255,0.4);
-  border-radius: 50%;
+.notification-row{
+  display:flex;
+  justify-content:flex-end;
+  align-items: flex-start;
+  gap:40px;
+  margin-top:5px;
+  width:100%;
+}
+
+.notification-icon{
   width: 40px;
   height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  border-radius:50%;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  position: relative;
+  cursor:pointer;
+  transition: 0.3s;
 }
 
-.notification-icon:hover {
-  background-color: #4a90e2;
-  color: white;
-  transform: translateY(-2px);
+.notification-icon:hover{
+  transform:translateY(-4px);
+  background:#4a90e2;
+  color:white;
 }
 
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #ff4444;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  min-width: 18px;
-  text-align: center;
-  animation: pulse 2s infinite;
+/* Icon sizes */
+.notification-icon .bell-icon { font-size: 20px; }
+.notification-icon .stock-icon { font-size: 20px; }
+.notification-icon .Facility-icon { font-size: 20px; }
+
+/* ================================
+   6. BADGES
+================================ */
+.notification-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  background:#ff4444;
+  color:white;
+  border-radius:20%;
+  padding:2px 4px;
+  font-size:13px;
 }
 
-.stock-notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #4CAF50;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  min-width: 18px;
-  text-align: center;
-  animation: pulse 2s infinite;
+.stock-notification-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  background:#4CAF50;
+  color:white;
+  border-radius:50%;
+  padding:4px 8px;
+  font-size:13px;
 }
 
-.facility-notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #FF9800;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  min-width: 18px;
-  text-align: center;
-  animation: pulse 2s infinite;
+.facility-notification-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  background:#FF9800;
+  color:white;
+  border-radius:50%;
+  padding:4px 8px;
+  font-size:13px;
 }
 
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 /* ================================
-   4.2 NOTIFICATION DROPDOWN
+   7. NOTIFICATION DROPDOWN
 ================================ */
 .notification-dropdown {
   position: absolute;
@@ -667,7 +684,7 @@ body, html {
 }
 
 /* ================================
-   4.3 LOADING SPINNER
+   8. LOADING SPINNER
 ================================ */
 .loading-spinner {
   display: flex;
@@ -691,7 +708,7 @@ body, html {
 }
 
 /* ================================
-   5. GLASS CARD CONTAINER
+   9. GLASS CARD
 ================================ */
 .glass-card { 
   width: 100%; 
@@ -704,15 +721,10 @@ body, html {
   margin-bottom: 30px; 
 }
 
-h3 { 
-  font-size: 22px; 
-  margin-bottom: 20px; 
-  color: #333; 
-}
-
+h3 { font-size: 22px; margin-bottom: 20px; color: #333; }
 
 /* ================================
-   6. INPUT FIELDS
+   10. INPUT FIELDS
 ================================ */
 input { 
   width: 100%; 
@@ -733,9 +745,8 @@ input:focus {
   box-shadow: 0 0 8px rgba(74,144,226,0.5); 
 }
 
-
 /* ================================
-   7. GENERAL BUTTON STYLE
+   11. BUTTONS
 ================================ */
 button { 
   padding: 10px 20px; 
@@ -761,9 +772,8 @@ button:disabled {
   transform: none;
 }
 
-
 /* ================================
-   8. TABLE DESIGN
+   12. TABLE
 ================================ */
 table { 
   width: 100%; 
@@ -776,8 +786,7 @@ table {
   box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
 }
 
-table th, 
-table td { 
+table th, table td { 
   padding: 12px 15px; 
   text-align: left; 
   font-size: 15px; 
@@ -808,7 +817,7 @@ table tr:hover {
 }
 
 /* ================================
-   9. TABLE NUMBER INPUT
+   13. NUMBER INPUTS IN TABLE
 ================================ */
 td input[type="number"] { 
   width: 80px; 
@@ -819,7 +828,7 @@ td input[type="number"] {
 }
 
 /* ================================
-   10. TOP NAVIGATION BUTTONS
+   14. TOP NAV BUTTONS
 ================================ */
 .top-nav { 
   position: absolute;
@@ -843,9 +852,7 @@ td input[type="number"] {
   transform: translateY(-2px); 
 }
 
-
-
-/* 11. Facility notification badge on nav button */
+/* Facility badge on top nav */
 .facility-nav-badge {
   position: absolute;
   top: -8px;
@@ -861,173 +868,82 @@ td input[type="number"] {
   border: 2px solid white;
 }
 
-/* Notification row under buttons */
-.notification-row{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  gap:40px;
-  margin-top:30px;
-  
-}
-
-
------------------------------------------------------------------------------------------
-/* Icon circle */
-.notification-icon{
-  width:25px;
-  height:25px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.35);
-  backdrop-filter:blur(10px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  position:relative;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.notification-icon:hover{
-  transform:translateY(-4px);
-  background:#4a90e2;
-  color:white;
-}
-
---------------------------------------------------------------------------------------------
-/* Bell icon inside the circle */
-.notification-icon .bell-icon {
-  font-size: 20px;           /* change the 🔔 size here */
-}
-
-
-/* stock icon inside the circle */
-.notification-icon .stock-icon {
-  font-size: 20px;           /* change the 📦 size here */
-}
-
-
-/* Box icon inside the circle */
-.notification-icon .Facility-icon {
-  font-size: 20px;           /* change the 🏢 size here */
-}
-
-
-----------------------------------------------------------------------------------------------
-
-/* badges */
-
-.notification-badge{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  background:#ff4444;
-  color:white;
-  border-radius:20%;
-  padding:2px 4px;
-  font-size:13px;
-}
-
-.stock-notification-badge{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  background:#4CAF50;
-  color:white;
-  border-radius:50%;
-  padding:4px 8px;
-  font-size:13px;
-}
-
-.facility-notification-badge{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  background:#FF9800;
-  color:white;
-  border-radius:50%;
-  padding:4px 8px;
-  font-size:13px;
-}
---------------------------------------------------------------------------------------------
-
 `}</style>
 
+
+
+
       <div className="wrapper">
-        <div className="navbar">
-          <h2>Admin Dashboard</h2>
-          <div className="nav-buttons">
-            <button 
-              onClick={() => setActiveTab("Stationery")} 
-              className={activeTab === "Stationery" ? "active" : ""}
-              disabled={isLoading}
-            >
-              Stationery
-              {pendingRequestsCount > 0 && activeTab !== "Stationery" && (
-                <span className="notification-badge">{pendingRequestsCount}</span>
-              )}
-            </button>
-            <button 
-              onClick={() => setActiveTab("stock")} 
-              className={activeTab === "stock" ? "active" : ""}
-              disabled={isLoading}
-            >
-              Stock
-              {lowStockItems.length > 0 && activeTab !== "stock" && (
-                <span className="stock-notification-badge">{lowStockItems.length}</span>
-              )}
-            </button>
-            <button 
-              onClick={() => setActiveTab("users")} 
-              className={activeTab === "users" ? "active" : ""}
-              disabled={isLoading}
-            >
-              Users
-            </button>
+      <div className="navbar">
             
+            <h2>ADMIN DASHBOARD</h2>
+
+  {/* ROW 1 - Navigation Buttons */}
+  <div className="nav-buttons">
+
+    <button 
+      onClick={() => setActiveTab("Stationery")} 
+      className={activeTab === "Stationery" ? "active" : ""}
+      disabled={isLoading}
+    >
+      Stationery
+      {pendingRequestsCount > 0 && activeTab !== "Stationery" && (
+        <span className="notification-badge">{pendingRequestsCount}</span>
+      )}
+    </button>
+
+    <button 
+      onClick={() => setActiveTab("stock")} 
+      className={activeTab === "stock" ? "active" : ""}
+      disabled={isLoading}
+    >
+      Stock
+      {lowStockItems.length > 0 && activeTab !== "stock" && (
+        <span className="stock-notification-badge">{lowStockItems.length}</span>
+      )}
+    </button>
+
+    <button 
+      onClick={() => setActiveTab("users")} 
+      className={activeTab === "users" ? "active" : ""}
+      disabled={isLoading}
+    >
+      Users
+    </button>
+
+  </div>
 
 
 
 
 
-            {/* Notification Bell Icon */}
-            <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
-              
-              <span className="bell-icon">🔔</span>
-              {pendingRequestsCount > 0 && (
-                <span className="notification-badge">{pendingRequestsCount}</span>
-              )}
-            </div>
+  {/* ROW 2 - Notification Icons */}
+  <div className="notification-row">
 
+    <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
+      <span className="bell-icon">🔔</span>
+      {pendingRequestsCount > 0 && (
+        <span className="notification-badge">{pendingRequestsCount}</span>
+      )}
+    </div>
 
+    {lowStockItems.length > 0 && (
+      <div className="notification-icon" onClick={() => setShowStockNotifications(!showStockNotifications)}>
+        <span className="stock-icon">📦</span>
+        <span className="stock-notification-badge">{lowStockItems.length}</span>
+      </div>
+    )}
 
+    {pendingFacilityCount > 0 && (
+      <div className="notification-icon" onClick={() => setShowFacilityNotifications(!showFacilityNotifications)}>
+        <span className="Facility-icon">🏢</span>
+        <span className="facility-notification-badge">{pendingFacilityCount}</span>
+      </div>
+    )}
 
+  </div>
+</div>
 
-            {/* Stock Notification Icon */}
-            {lowStockItems.length > 0 && (
-              <div className="notification-icon" onClick={() => setShowStockNotifications(!showStockNotifications)}>
-               
-                <span className="stock-icon"> 📦</span>
-                <span className="stock-notification-badge">{lowStockItems.length}</span>
-              </div>
-            )}
-
-
-
-
-
-            {/* Facility Notification Icon */}
-            {pendingFacilityCount > 0 && (
-              <div className="notification-icon" onClick={() => setShowFacilityNotifications(!showFacilityNotifications)}>
-                
-              <span className="Facility-icon"> 🏢</span>
-                
-                <span className="facility-notification-badge">{pendingFacilityCount}</span>
-              </div>
-            )}
-          </div>
-        </div>
 
 
 
@@ -1035,9 +951,10 @@ td input[type="number"] {
 
         {/* Request Notification Dropdown */}
         {showNotifications && (
+          
           <div className="notification-dropdown">
             <div className="notification-header">
-              <h4>Request Notifications</h4>
+              <h4>Stationery Notifications</h4>
               <button onClick={() => setShowNotifications(false)} style={{ padding: '5px 10px', fontSize: '12px' }}>Close</button>
             </div>
             {requests.filter(req => req.status === null || req.status === "Pending").length > 0 ? (
@@ -1097,7 +1014,7 @@ td input[type="number"] {
                     Item: {item.item_name}<br />
                     Category: {item.category}<br />
                     Current Quantity: <strong style={{ color: '#ff4444' }}>{item.quantity}</strong> (Below 50)<br />
-                    Unit Price: ${item.unit_price}
+                   
                   </div>
                   <div className="notification-time">
                     Last Updated: {new Date(item.last_updated).toLocaleString()}
@@ -1214,47 +1131,296 @@ td input[type="number"] {
           </div>
         )}
 
-        {/* ================= STOCK ================= */}
-        {!isLoading && activeTab === "stock" && (
-          <div className="glass-card">
-            <h3>Add New Stock Item</h3>
-            <input placeholder="Item Name" value={newStock.item_name} onChange={e => setNewStock({ ...newStock, item_name: e.target.value })} />
-            <input placeholder="Category" value={newStock.category} onChange={e => setNewStock({ ...newStock, category: e.target.value })} />
-            <input placeholder="Quantity" type="number" value={newStock.quantity} onChange={e => setNewStock({ ...newStock, quantity: Number(e.target.value) })} />
-            <input placeholder="Unit Price" type="number" value={newStock.unit_price} onChange={e => setNewStock({ ...newStock, unit_price: Number(e.target.value) })} />
-            <button onClick={handleAddStock}>Add Stock</button>
 
-            <h3 style={{ marginTop: "30px" }}>Stock List {lowStockItems.length > 0 && `(${lowStockItems.length} items below 50)`}</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th><th>Item</th><th>Category</th><th>Quantity</th><th>Unit Price</th><th>Last Updated</th><th>Refill</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stockItems.map(item => (
-                  <tr key={item.stock_id} className={item.quantity < 50 ? 'low-stock-row' : ''}>
-                    <td>{item.stock_id}</td>
-                    <td>{item.item_name} {item.quantity < 50 && '⚠️'}</td>
-                    <td>{item.category}</td>
-                    <td style={item.quantity < 50 ? { color: '#ff4444', fontWeight: 'bold' } : {}}>{item.quantity}</td>
-                    <td>{item.unit_price}</td>
-                    <td>{item.last_updated}</td>
-                    <td>
-                      <input type="number" placeholder="Qty" value={refillQuantities[item.stock_id] || ""} onChange={e => setRefillQuantities(prev => ({ ...prev, [item.stock_id]: Number(e.target.value) }))} />
-                      <button onClick={() => handleRefillStock(item.stock_id)}>Refill</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* ================= STOCK ================= */}
+
+{!isLoading && activeTab === "stock" && (
+  <div className="glass-card">
+    <h3>Add New Stock Item</h3>
+    
+    {/* Item Name Searchable Dropdown */}
+    <input
+  list="item-name-options"
+  placeholder="Search or Select Item Name"
+  value={newStock.item_name}
+  onChange={e => setNewStock({ ...newStock, item_name: e.target.value })}
+  style={{
+    width: "100%",
+    maxWidth: "300px",
+    padding: "12px 15px",
+    margin: "8px 0",
+    borderRadius: "12px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+    background: "rgba(45, 43, 43, 0.7)",
+    backdropFilter: "blur(6px)",
+    color: "#fff"
+  }}
+/>
+
+     <datalist id="item-name-options">
+  <option value="Pencil" />
+  <option value="Eraser" />
+  <option value="Cutter – Pencil" />
+  <option value="Pen Blue" />
+  <option value="Pen Black" />
+  <option value="Pen Red" />
+  <option value="Permanent Marker Blue" />
+  <option value="Permanent Marker Black" />
+  <option value="Permanent Marker Red" />
+  <option value="Whiteboard Marker Blue" />
+  <option value="Whiteboard Marker Black" />
+  <option value="Whiteboard Marker Red" />
+  <option value="Highlighter Pen Green" />
+  <option value="Highlighter Pen Yellow" />
+  <option value="Highlighter Pen Pink" />
+  <option value="Highlighter Pen Blue" />
+  <option value="Highlighter Pen Orange" />
+  <option value="Platignum Pen 6 Packs" />
+  <option value="Platignum Pen 12 Packs" />
+  <option value="Correction Pen" />
+  <option value='Foot Ruler 12" Plastic' />
+  <option value='Foot Ruler 6" Steel' />
+  <option value="Scissors Small" />
+  <option value="Scissors Medium" />
+  <option value="Scissors Large" />
+  <option value="Paper Cutter Small" />
+  <option value="Paper Cutter Medium" />
+  <option value="Paper Clips Small" />
+  <option value="Paper Clips Medium" />
+  <option value="Binder Clips 15 mm" />
+  <option value="Binder Clips 19 mm" />
+  <option value="Binder Clips 25 mm" />
+  <option value="Binder Clips 32 mm" />
+  <option value="Drawing Pins" />
+  <option value="File Fasteners Black" />
+  <option value="File Fasteners Blue" />
+  <option value="File Fasteners Red" />
+  <option value="File Fasteners Green" />
+  <option value="File Fasteners Yellow" />
+  <option value="Rubber Bands" />
+  <option value="Flat File Cardboard" />
+  <option value="Flat File Plastic" />
+  <option value="Clip File A4" />
+  <option value="Box Files" />
+  <option value="File Separators" />
+  <option value="Magazine Holder Plastic" />
+  <option value="Certificate Files – 10 Pockets" />
+  <option value="Certificate Files – 20 Pockets" />
+  <option value="Certificate Files – 30 Pockets" />
+  <option value="Certificate Files – 40 Pockets" />
+  <option value="Two Ring Files" />
+  <option value="File Lace" />
+  <option value="A4 Paper White" />
+  <option value="A3 Paper White" />
+  <option value="A5 Paper White" />
+  <option value="A4 Paper Rainbow" />
+  <option value="Sticker Paper White A4" />
+  <option value="Demy Paper White" />
+  <option value="Flip Chart Paper 23.4 × 33.1 in" />
+  <option value="Flip Chart Paper 16.5 × 23.4 in" />
+  <option value="Bristol Board White" />
+  <option value="Clear Glue 50ml" />
+  <option value="Clear Glue 8g" />
+  <option value="Binder Glue 40g" />
+  <option value="Binder Glue 100g" />
+  <option value="Cello Tape 12mm" />
+  <option value="Cello Tape 18mm" />
+  <option value="Cello Tape 24mm" />
+  <option value="Cello Tape 36mm" />
+  <option value="Cello Tape 48mm" />
+  <option value="Cello Tape 60mm" />
+  <option value="PVC Packing Tape Red 48mm × 66m" />
+  <option value="PVC Packing Tape Blue 48mm × 66m" />
+  <option value="PVC Packing Tape Green 48mm × 66m" />
+  <option value="PVC Packing Tape Yellow 48mm × 66m" />
+  <option value="PVC Packing Tape Black 48mm × 66m" />
+  <option value="PVC Packing Tape Orange 48mm × 66m" />
+  <option value="Masking Tape 12mm" />
+  <option value="Masking Tape 18mm" />
+  <option value="Masking Tape 24mm" />
+  <option value="Masking Tape 36mm" />
+  <option value="Masking Tape 48mm" />
+  <option value="Masking Tape 72mm" />
+  <option value="Double Tape 9mm" />
+  <option value="Double Tape 12mm" />
+  <option value="Double Tape 18mm" />
+  <option value="Double Tape 24mm" />
+  <option value="Double Tape 36mm" />
+  <option value="Binding Tape 36mm Black" />
+  <option value="Binding Tape 36mm Blue" />
+  <option value="Binding Tape 36mm Red" />
+  <option value="Binding Tape 36mm Green" />
+  <option value="Binding Tape 36mm Yellow" />
+  <option value="Binding Tape 48mm Black" />
+  <option value="Binding Tape 48mm Blue" />
+  <option value="Binding Tape 48mm Red" />
+  <option value="Binding Tape 48mm Green" />
+  <option value="Binding Tape 48mm Yellow" />
+  <option value="Tape Dispenser Small" />
+  <option value="Tape Dispenser Medium" />
+  <option value="Tape Dispenser Large" />
+  <option value='Sticky Notes 3" × 3"' />
+  <option value='Sticky Notes 0.6" × 3"' />
+  <option value="Puncher Small" />
+  <option value="Puncher Medium" />
+  <option value="Puncher Large" />
+  <option value="Stapler Machine Small" />
+  <option value="Stapler Machine Medium" />
+  <option value="Stapler Machine Large" />
+  <option value="Stapler Pins Small" />
+  <option value="Stapler Pins Medium" />
+  <option value="Stapler Pins Large" />
+  <option value="Calculator" />
+</datalist>
+    
+    {/* Category Dropdown */}
+    <select 
+      value={newStock.category} 
+      onChange={e => setNewStock({ ...newStock, category: e.target.value })}
+      style={{ 
+        width: '100%', 
+        maxWidth: '300px', 
+        padding: '12px 15px', 
+        margin: '8px 0', 
+        borderRadius: '12px', 
+        border: '1px solid #ccc', 
+        fontSize: '16px', 
+        background: 'rgba(72, 65, 65, 0.7)', 
+        backdropFilter: 'blur(6px)',
+        cursor: 'pointer'
+       
+      }}
+    >
+      <option value="">Select Category</option>
+      <option value="Writing Instruments">Stationary</option>
+      {/* <option value="Measuring & Cutting">Measuring & Cutting</option>
+      <option value="Clips & Fasteners">Clips & Fasteners</option>
+      <option value="Filing & Storage">Filing & Storage</option>
+      <option value="Exercise & CR Books">Exercise & CR Books</option>
+      <option value="Paper & Boards">Paper & Boards</option>
+      <option value="Adhesives">Adhesives</option>
+      <option value="Tapes">Tapes</option>
+      <option value="Desk Accessories & Tools">Desk Accessories & Tools</option>
+      <option value="Envelopes">Envelopes</option>
+      <option value="Office Equipment & Furniture">Office Equipment & Furniture</option> */}
+    </select>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ {/* Quantity  */}
+
+
+    <input 
+      placeholder="Quantity" 
+      type="number" 
+
+
+style={{ 
+        width: '100%', 
+        maxWidth: '300px', 
+        padding: '12px 15px', 
+        margin: '8px 0', 
+        borderRadius: '12px', 
+        border: '1px solid #ccc', 
+        fontSize: '16px', 
+        background: 'rgba(72, 65, 65, 0.7)', 
+        backdropFilter: 'blur(6px)',
+        cursor: 'pointer'
+       
+      }}
+
+
+
+
+      value={newStock.quantity} 
+      onChange={e => setNewStock({ ...newStock, quantity: Number(e.target.value) })} 
+    />
+    <button onClick={handleAddStock}>Add Stock</button>
+
+    <h3 style={{ marginTop: "30px" }}>Stock List {lowStockItems.length > 0 && `(${lowStockItems.length} items below 50)`}</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Item</th><th>Category</th><th>Quantity</th><th>Last Updated</th><th>Refill</th>
+        </tr>
+      </thead>
+      <tbody>
+        {stockItems.map(item => (
+          <tr key={item.stock_id} className={item.quantity < 50 ? 'low-stock-row' : ''}>
+            <td>{item.stock_id}</td>
+            <td>{item.item_name} {item.quantity < 50 && '⚠️'}</td>
+            <td>{item.category}</td>
+            <td style={item.quantity < 50 ? { color: '#ff4444', fontWeight: 'bold' } : {}}>{item.quantity}</td>
+            <td>{item.last_updated}</td>
+            <td>
+              <input type="number" placeholder="Qty" value={refillQuantities[item.stock_id] || ""} onChange={e => setRefillQuantities(prev => ({ ...prev, [item.stock_id]: Number(e.target.value) }))} />
+              <button onClick={() => handleRefillStock(item.stock_id)}>Refill</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}        
+
 
         {/* ================= USERS ================= */}
         {!isLoading && activeTab === "users" && (
           <div className="glass-card">
-            <h3>Add User</h3>
+            {/* <h3>Add User</h3>
             <input placeholder="Full Name" value={newUser.full_name} onChange={e => setNewUser({ ...newUser, full_name: e.target.value })} />
             <input placeholder="Username" value={newUser.username} onChange={e => setNewUser({ ...newUser, username: e.target.value })} />
             <input placeholder="Email" type="email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
@@ -1271,7 +1437,7 @@ td input[type="number"] {
 
             <h3 style={{ marginTop: "30px" }}>Forgot Password</h3>
             <input placeholder="User Email" type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} />
-            <button onClick={handleForgotPassword}>Send Reset Link</button>
+            <button onClick={handleForgotPassword}>Send Reset Link</button> */}
 
             <h3 style={{ marginTop: "30px" }}>User List</h3>
             <table>
@@ -1298,9 +1464,31 @@ td input[type="number"] {
           </div>
         )}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
         {/* ================= BOTTOM NAV ================= */}
         <div className="top-nav">
-          <button onClick={handleBack}>Back</button>
+         {/* <button onClick={handleBack}>Back</button>*/}
           <button onClick={handleHome}>Home</button>
           <button onClick={handleLogout}>Logout</button>
           <button 

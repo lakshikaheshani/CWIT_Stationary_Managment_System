@@ -171,7 +171,7 @@ const textareaStyle = {
   borderRadius: "8px",
   border: "1px solid #ccc",
   marginTop: "20px",
-  color: "#000",
+  color: "#ffffff",
 };
 
 const emailBox = {
@@ -206,7 +206,7 @@ const submitBtn = {
 };
 
 const cardStyle = {
-  background: "#5a5858",
+  background: "#ffffff",
   padding: "15px",
   borderRadius: "10px",
   marginTop: "15px",
